@@ -6,6 +6,9 @@ It is highly impressive that this **32.7 Billion parameter** state-of-the-art co
 - **Status**: **Stable & Coherent**
 - **Current Offloading**: **45 of 65 layers** on GPU (remaining 20 on CPU)
 - **TurboQuant Magic**: Uses 2-bit KV Cache (`turbo2`) to shrink a 128k context window to only ~4.2GB, making this 32B model fit comfortably within 16GB VRAM.
+- **Performance (45/65 Split)**:
+  - **Generation**: ~4.0 - 5.5 t/s
+  - **Prompt Processing**: ~29 - 65 t/s
 
 ## Core Repository
 - **Optimized Backend**: [Michael-Z-Freeman/llama-cpp-turboquant](https://github.com/Michael-Z-Freeman/llama-cpp-turboquant) (Force-synced to verified baseline)
