@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Simplified llama-server launcher for AI Station (DeepSeek-R1-32B Quality Optimized)
+# Simplified llama-server launcher for AI Station (Gemma-3 Balanced)
 set -euo pipefail
 
 # Load central configuration
@@ -17,9 +17,9 @@ if [[ ! -f "$AI_STATION_MODEL_PATH" ]]; then
   exit 1
 fi
 
-echo "Starting llama-server (DeepSeek-R1) on ${AI_STATION_LLAMA_HOST}:${AI_STATION_LLAMA_PORT}..."
+echo "Starting llama-server (Gemma-3) on ${AI_STATION_LLAMA_HOST}:${AI_STATION_LLAMA_PORT}..."
 
-# Hand over to llama-server binary with Quality-focused settings
+# Hand over to llama-server binary with Balanced settings
 exec "$AI_STATION_LLAMA_BIN" \
   -m "$AI_STATION_MODEL_PATH" \
   --host "$AI_STATION_LLAMA_HOST" \
@@ -28,10 +28,9 @@ exec "$AI_STATION_LLAMA_BIN" \
   --gpu-layers "$AI_STATION_GPU_LAYERS" \
   --jinja \
   --flash-attn on \
-  --cache-type-k turbo4 \
-  --cache-type-v turbo4 \
+  --cache-type-k turbo3 \
+  --cache-type-v turbo3 \
   --cache-ram 0 \
-  --temp 0.6 \
-  --top-p 0.95 \
-  --repeat-penalty 1.05 \
+  --temp 0.8 \
+  --repeat-penalty 1.1 \
   --parallel 1
