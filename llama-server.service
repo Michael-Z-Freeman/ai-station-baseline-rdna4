@@ -1,0 +1,16 @@
+[Unit]
+Description=AI Station: llama-server Backend
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/home/michaelzfreeman/bin/run_llama_simple.sh
+WorkingDirectory=/home/michaelzfreeman
+Restart=on-failure
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=default.target

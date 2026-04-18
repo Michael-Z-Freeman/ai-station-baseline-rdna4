@@ -1,0 +1,21 @@
+[Unit]
+Description=AI Station: Open WebUI
+Requires=llama-server.service
+After=llama-server.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/michaelzfreeman/Installations/BitNet-M1-AI-Station
+
+# Wait for llama-server to be ready before starting the UI
+ExecStartPre=/usr/bin/timeout 180 bash -c 'until curl -s http://127.0.0.1:8081/v1/models; do sleep 2; echo "Waiting for llama-server..."; done'
+
+ExecStart=/home/michaelzfreeman/bin/run_openwebui_simple.sh
+Restart=on-failure
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=default.target
