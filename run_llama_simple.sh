@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Simplified llama-server launcher for AI Station (TurboQuant Optimized)
+# Simplified llama-server launcher for AI Station (DeepSeek-R1-32B Optimized)
 set -euo pipefail
 
 # Load central configuration
@@ -17,9 +17,9 @@ if [[ ! -f "$AI_STATION_MODEL_PATH" ]]; then
   exit 1
 fi
 
-echo "Starting llama-server (AI Station) on ${AI_STATION_LLAMA_HOST}:${AI_STATION_LLAMA_PORT}..."
+echo "Starting llama-server (DeepSeek-R1) on ${AI_STATION_LLAMA_HOST}:${AI_STATION_LLAMA_PORT}..."
 
-# Hand over to llama-server binary with TurboQuant and memory fixes
+# Hand over to llama-server binary with DeepSeek-R1 recommended settings
 exec "$AI_STATION_LLAMA_BIN" \
   -m "$AI_STATION_MODEL_PATH" \
   --host "$AI_STATION_LLAMA_HOST" \
@@ -31,4 +31,6 @@ exec "$AI_STATION_LLAMA_BIN" \
   --cache-type-k turbo2 \
   --cache-type-v turbo2 \
   --cache-ram 0 \
+  --temp 0.6 \
+  --top-p 0.95 \
   --parallel 1
