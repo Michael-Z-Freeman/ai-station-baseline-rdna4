@@ -29,3 +29,9 @@ Optimized for your **16GB GPU** and **14GB RAM**:
 - `--cache-ram 0` (Prevents system lag)
 - `--cache-type-k turbo3 --cache-type-v turbo3` (Precise 3-bit memory)
 - `--temp 0.8 --repeat-penalty 1.1` (Stability for Javascript/Coding)
+
+## 6. Known Issues & TODO
+- [ ] **Gemma-3 Native Reasoning**: The built-in `--reasoning on` and `bailing-think` templates currently cause gibberish output with this Gemma-3 GGUF. 
+  - **Status**: Reverted to stable configuration. 
+  - **Workaround**: Use prompt engineering (*"Think step-by-step inside <thought> tags"*) instead of server-side flags.
+  - **Required**: Need to develop/source a specialized Gemma-3 Jinja template that correctly handles the `<thought>` (108) and `</thought>` (109) tokens.
