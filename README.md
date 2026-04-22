@@ -182,3 +182,35 @@ echo "Starting Open WebUI on ${AI_STATION_WEBUI_HOST}:${AI_STATION_WEBUI_PORT}..
 
 exec open-webui serve
 ```
+
+## Qwen Function Calling Architecture
+
+This project uses a three-way handshake to enable the AI model to interact with your local files and system.
+
+### The Handshake Schematic
+
+```text
+┌────────────────────────────────┐          ┌──────────────────────────┐          ┌──────────────────────────┐
+│      QWEN CLI AGENT            │          │      LLAMA-SERVER        │          │       QWEN MODEL         │
+│      (Node.js App)             │          │      (llama.cpp)         │          │       (GGUF File)        │
+├────────────────────────────────┤          ├──────────────────────────┤          ├──────────────────────────┤
+│ 1. DEFINES TOOLS               │          │                          │          │                          │
+│    (read_file, edit, etc.)     │─────────>│ 2. PASSES PROMPT         │─────────>│ 3. REASONS & DECIDES     │
+│                                │          │    + TOOL SCHEMAS        │          │    "I need a tool!"      │
+│                                │          │                          │          │                          │
+│                                │          │                          │          │ 4. OUTPUTS TEXT:         │
+│ 6. EXECUTES TOOL               │<─────────│ 5. THE TRANSLATOR        │<─────────│    "<tool_call>...      │
+│    (Reads your actual hard     │          │    (The Parser)          │          │     JSON..."            │
+│     drive via Node.js)         │          │                          │          └──────────────────────────┘
+└────────────────────────────────┘          └──────────────────────────┘
+```
+
+### Handshake Component Breakdown
+
+| Phase | Component | Action |
+| :--- | :--- | :--- |
+| **1. Define** | **CLI Agent** | Sends the user prompt plus tool "Schemas" (e.g., `read_file` requires a `file_path`). |
+| **2. Decide** | **Qwen Model** | The model reasons through the prompt and decides to use a tool by outputting XML/JSON text. |
+| **3. Translate**| **llama-server** | **(Crucial Step)** Intercepts the model's text and packages it into the OpenAI-standard `tool_calls` JSON field. |
+| **4. Execute** | **CLI Agent** | Receives the `tool_calls` field and triggers its local Node.js code to read/write files or run shell commands. |
+| **5. Return**  | **CLI Agent** | Sends the result (e.g., file contents) back to the model to complete the original request. |
