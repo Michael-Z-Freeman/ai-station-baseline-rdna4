@@ -202,7 +202,16 @@ This project uses a three-way handshake to enable the AI model to interact with 
 │ 6. EXECUTES TOOL               │<─────────│ 5. THE TRANSLATOR        │<─────────│    "<tool_call>...      │
 │    (Reads your actual hard     │          │    (The Parser)          │          │     JSON..."            │
 │     drive via Node.js)         │          │                          │          └──────────────────────────┘
-└────────────────────────────────┘          └──────────────────────────┘
+└──────────────┬─────────────────┘          └────────────┬─────────────┘
+               │                                         │
+               │                                         │
+               ▼                                         ▼
+    ┌────────────────────────┐                ┌────────────────────────┐
+    │  CURRENT STATUS:       │                │  WHERE IT BREAKS:      │
+    │  The Agent is IDLE     │                │  Server is NOT parsing │
+    │  because it sees only  │                │  Step 4 text into the  │
+    │  standard chat text.   │                │  OpenAI JSON field.    │
+    └────────────────────────┘                └────────────────────────┘
 ```
 
 ### Handshake Component Breakdown
