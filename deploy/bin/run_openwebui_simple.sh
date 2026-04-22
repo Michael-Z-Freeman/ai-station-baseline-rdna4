@@ -8,11 +8,6 @@ source "${HOME}/.config/ai-station.env"
 # Move to the Open WebUI directory
 cd "$AI_STATION_WEBUI_DIR"
 
-# Apply hotfixes if script exists
-if [[ -x "./scripts/patch_openwebui_serper.sh" ]]; then
-  echo "Applying Open WebUI patches..."
-  "./scripts/patch_openwebui_serper.sh"
-fi
 
 # Activate virtualenv
 if [[ ! -f ".venv-webui/bin/activate" ]]; then
@@ -27,6 +22,7 @@ export HOST="$AI_STATION_WEBUI_HOST"
 export PORT="$AI_STATION_WEBUI_PORT"
 export OPENAI_API_BASE_URL="http://${AI_STATION_LLAMA_HOST}:${AI_STATION_LLAMA_PORT}/v1"
 export OPENAI_API_KEY="unused"
+export DATA_DIR="/home/michaelzfreeman/Installations/BitNet-M1-AI-Station/data"
 
 echo "Starting Open WebUI on ${AI_STATION_WEBUI_HOST}:${AI_STATION_WEBUI_PORT}..."
 

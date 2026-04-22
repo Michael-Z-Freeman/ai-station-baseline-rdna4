@@ -78,3 +78,102 @@ uv run --with transformers --with torch --with numpy --with sentencepiece --with
   # Update/Reinstall stable version
   uv pip install open-webui==0.8.12 --python /path/to/venv/bin/python3
   ```
+
+---
+
+## 3. Deployment & Automation
+
+The project includes systemd service units and supporting bash scripts to manage the LLM stack. These are located in the `deploy/` directory and should be linked to their respective system locations.
+
+### Systemd Services (`deploy/systemd/`)
+
+#### **`llm-webui-stack.service`**
+The primary orchestrator that manages both the backend and frontend as a unified stack.
+```ini
+[Unit]
+Description=Local LLM + Open WebUI stack
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/home/michaelzfreeman/bin/start-llm-webui-stack.sh
+WorkingDirectory=/home/michaelzfreeman
+Restart=on-failure
+RestartSec=5
+StandardOutput=append:/home/michaelzfreeman/tmp/llm-webui-stack.log
+StandardError=append:/home/michaelzfreeman/tmp/llm-webui-stack.err.log
+
+[Install]
+WantedBy=default.target
+```
+
+### Automation Scripts (`deploy/bin/`)
+
+#### **`start-llm-webui-stack.sh`**
+A robust wrapper that ensures `llama-server` is ready before launching the WebUI. It uses a FIFO pipe to keep the interactive server process active under systemd.
+```bash
+#!/usr/bin/env bash
+set -euo pipefail
+
+LLAMA_SCRIPT="/home/michaelzfreeman/Development/local-llm/llama-cpp-turboquant/run_llama_timed_prompt.sh"
+WEBUI_SCRIPT="/home/michaelzfreeman/Installations/BitNet-M1-AI-Station/start_webui.sh"
+# ... [See deploy/bin/start-llm-webui-stack.sh for full implementation]
+```
+
+#### **`run_llama_simple.sh`**
+Optimized launcher for the TurboQuant backend using local environment configuration.
+```bash
+#!/usr/bin/env bash
+# AI Station: Gemma-3-27B (Full TQ4 Lossless Optimized)
+set -euo pipefail
+source "${HOME}/.config/ai-station.env"
+
+echo "Starting llama-server (Gemma-3 TQ4) on ${AI_STATION_LLAMA_HOST}:${AI_STATION_LLAMA_PORT}..."
+
+exec "$AI_STATION_LLAMA_BIN" \
+  -m "$AI_STATION_MODEL_PATH" \
+  --host "$AI_STATION_LLAMA_HOST" \
+  --port "$AI_STATION_LLAMA_PORT" \
+  --ctx-size "$AI_STATION_CTX_SIZE" \
+  --gpu-layers "$AI_STATION_GPU_LAYERS" \
+  --jinja \
+  --chat-template-kwargs '{"chat_format": "openai"}' \
+  --flash-attn on \
+  --cache-type-k q8_0 \
+  --cache-type-v turbo4 \
+  --cache-ram 0 \
+  --temp 0.1 \
+  --top-p 0.9 \
+  --top-k 40 \
+  --repeat-penalty 1.1 \
+  --parallel 1
+```
+
+#### **`run_openwebui_simple.sh`**
+Launcher for the Open WebUI frontend, managing virtualenv activation and environment variables.
+```bash
+#!/usr/bin/env bash
+# Simplified Open WebUI launcher for AI Station
+set -euo pipefail
+
+# Load central configuration
+source "${HOME}/.config/ai-station.env"
+
+# Move to the Open WebUI directory
+cd "$AI_STATION_WEBUI_DIR"
+
+# Activate virtualenv
+source .venv-webui/bin/activate
+
+# Set environment variables for the process
+export HOST="$AI_STATION_WEBUI_HOST"
+export PORT="$AI_STATION_WEBUI_PORT"
+export OPENAI_API_BASE_URL="http://${AI_STATION_LLAMA_HOST}:${AI_STATION_LLAMA_PORT}/v1"
+export OPENAI_API_KEY="unused"
+export DATA_DIR="$AI_STATION_WEBUI_DIR/data"
+
+echo "Starting Open WebUI on ${AI_STATION_WEBUI_HOST}:${AI_STATION_WEBUI_PORT}..."
+
+exec open-webui serve
+```

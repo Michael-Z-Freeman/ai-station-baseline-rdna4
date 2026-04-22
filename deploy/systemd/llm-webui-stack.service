@@ -1,0 +1,16 @@
+[Unit]
+Description=Local LLM + Open WebUI stack
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/home/michaelzfreeman/bin/start-llm-webui-stack.sh
+WorkingDirectory=/home/michaelzfreeman
+Restart=on-failure
+RestartSec=5
+StandardOutput=append:/home/michaelzfreeman/tmp/llm-webui-stack.log
+StandardError=append:/home/michaelzfreeman/tmp/llm-webui-stack.err.log
+
+[Install]
+WantedBy=default.target
