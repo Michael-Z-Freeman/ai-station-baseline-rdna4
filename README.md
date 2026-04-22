@@ -35,6 +35,11 @@ Discovered that the backend defaults to decompressing TQ4 models to 8-bit during
 - **Fix**: `export GGML_TQ_NATIVE=1` (Disables dequantization, saving ~4GB VRAM).
 
 ### **Quantization Integrity**
+
+### **Note on Calibration & Importance Matrix (imatrix)**
+Standard `llama.cpp` quants (like `IQ4_XS` or `Q4_K_M`) benefit from `imatrix` calibration to reduce perplexity loss. However, for this **TurboQuant** fork using `TQ4_1S` (Config-I):
+- **Skipped imatrix**: The `TQ4_1S` quantization algorithm uses a fixed iterative refinement process that does not currently utilize external importance data.
+- **Native Robustness**: The built-in Walsh-Hadamard Transform (WHT) rotation makes the model naturally robust to quantization errors without per-tensor calibration.
 Standard quantization often leaves large tensors in F32/F16.
 - **Fix**: Use `--pure` flag during `llama-quantize` to force all tensors into the 4-bit domain.
 
