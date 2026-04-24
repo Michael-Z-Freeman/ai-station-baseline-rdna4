@@ -3,7 +3,7 @@
 <img width="2053" height="1601" alt="59b3c116-2653-4d50-9b5f-1fefd24a61bf" src="https://github.com/user-attachments/assets/32c6ce65-aa98-47a1-9e00-802a28eb0021" />
 
 ## **Current Milestone: Qwen2.5-Coder-14B-Instruct (Native TurboQuant 4-bit)**
-This configuration represents a significant breakthrough in coding performance. By leveraging the **Native TurboQuant** mode, this 14.7B parameter model is fully offloaded to the 16GB GPU with room for a large context window. It successfully handles complex tasks like Three.js visualisations that previously failed on other models.
+This configuration represents a significant breakthrough in coding performance. By leveraging the **Native TurboQuant** mode, this 14.7B parameter model is fully offloaded to the 16GB GPU with room for a large context window. It successfully handles complex tasks like Three.js visualisations that previously failed on other models. However that comes with some caveats. In my tests the model fell down on some simple Three.js library calling in Open WebUI. But when I tested using Qwen Coder CLI the model accurately called the libraries. Qwen Coder has some issues though like a large amount of unresolved bugs on its GitHub repo. Also tool calling is broken for local models. But all things considered I've found this to be very productive research. It's amazing any of this works on a 16GB GPU. Imagine what an be achieved on a 128GB shared memory machine wikth Turbo Quant.
 
 - **Quantization**: TQ4_1S (Pure Config-I) ~8.7GB
 - **Status**: **100% GPU Offloaded (49/49 layers)**
